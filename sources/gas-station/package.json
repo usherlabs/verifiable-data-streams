@@ -1,0 +1,15 @@
+{
+  "name": "gas-station",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "tsx ./build.ts",
+    "clean": "rm -rf lib node_modules out"
+  },
+  "dependencies": {
+    "rxjs": "8.0.0-alpha.12",
+    "alchemy-sdk": "^3.0.0"
+    }
+}

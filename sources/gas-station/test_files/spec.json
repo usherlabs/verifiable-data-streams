@@ -1,0 +1,20 @@
+{
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gas Station Spec",
+    "type": "object",
+    "required": [
+      "source"
+    ],
+    "additionalProperties": true,
+    "properties": {
+      "source": {
+        "type": "string",
+        "enum": [
+          "blocknative",
+          "alchemy"
+        ]
+      }
+    }
+  }
+}

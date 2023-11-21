@@ -1,0 +1,25 @@
+{
+  "documentationUrl": "https://docs.faros.ai",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Gas Station Spec",
+    "type": "object",
+    "required": [
+      "blockNativeApiKey",
+      "alchemyApiKey"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "blockNativeApiKey": {
+        "type": "string",
+        "airbyte_secret": true,
+        "title": "Block Native API Key"
+      },
+      "alchemyApiKey": {
+        "type": "string",
+        "airbyte_secret": true,
+        "title": "Alchemy API Key"
+      }
+    }
+  }
+}
