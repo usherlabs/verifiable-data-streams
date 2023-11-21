@@ -1,0 +1,69 @@
+{
+  "name": "streamr-destination",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Streamr Destination for Airbyte",
+  "keywords": [
+    "airbyte",
+    "destination",
+    "streamr"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "check": "node bin/main.js check --config ./secret/config.json",
+    "spec": "node bin/main.js spec",
+    "write": "cat sample_files/records.jsonl | node bin/main.js write --config secret/config.json --catalog sample_files/configured_catalog.json"
+  },
+  "homepage": "https://thanhle.blog",
+  "repository": "https://github.com/faros-ai/airbyte-connectors",
+  "author": "Faros AI, Inc.",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./lib.js",
+  "dependencies": {
+    "faros-feeds-sdk": "^0.9.0",
+    "git-url-parse": "^11.6.0",
+    "jsonata": "^1.8.5",
+    "to-json-schema": "^0.2.5",
+    "object-sizeof": "^1.6.1",
+    "lodash": "^4.17.21",
+    "rxjs": "8.0.0-alpha.12",
+    "commander": "^11.1.0",
+    "sqlite": "^4.0.23",
+    "streamr-client": "^8.5.5",
+    "turndown": "^7.1.1"
+  },
+  "jest": {
+    "coverageDirectory": "out/coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      ".d.ts",
+      ".js"
+    ],
+    "testTimeout": 30000,
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "test/tsconfig.json"
+      }
+    }
+  },
+  "devDependencies": {
+    "cross-spawn": "^7.0.3",
+    "@types/cross-spawn": "^6.0.5",
+    "@types/to-json-schema": "^0.2.4",
+    "temp": "^0.9.4",
+    "@types/temp": "^0.9.4",
+    "@types/turndown": "^5.0.1",
+    "@types/lodash": "^4.14.201"
+  }
+}
