@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "moduleDetection": "auto",
+    "isolatedModules": true,
+    "module": "ESNext",
+    "pretty": true,
+    "resolveJsonModule": false,
+    "skipLibCheck": true,
+    "moduleResolution": "Node",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ESNext"
+  }
+}
