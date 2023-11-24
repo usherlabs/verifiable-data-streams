@@ -1,30 +1,32 @@
 import { Command } from "commander";
 import {
   AirbyteConfig,
-  AirbyteConfiguredCatalog,
   AirbyteLogger,
-  AirbyteMessage,
   AirbyteSourceBase,
   AirbyteSourceRunner,
   AirbyteSpec,
-  AirbyteState,
   AirbyteStreamBase,
 } from "faros-airbyte-cdk";
 import { blockNativeNetworkGasStations } from "./utils/block-native";
 import {
+  catchError,
   defaultIfEmpty,
+  EMPTY,
   filter,
   firstValueFrom,
   forkJoin,
-  from,
   map,
   merge,
-  tap,
+  Observable,
+  timeout,
 } from "rxjs";
 import { VError } from "@netflix/nerror";
 import { tuple } from "./utils/tuple";
 import { alchemyNetworkGasStations } from "./utils/alchemy";
 import { SourceStream } from "./streams/sourceStream";
+import { networkList, Networks } from "./utils/common";
+import { ankrNetworkGasStations } from "./utils/ankr";
+import { llamaNetworkGasStations } from "./utils/llamarpc";
 
 /** The main entry point. */
 export function mainCommand(): Command {
@@ -48,16 +50,16 @@ class GasStationSource extends AirbyteSourceBase<SourceConfig> {
   async checkConnection(
     config: SourceConfig,
   ): Promise<[boolean, VError | undefined]> {
-    const blockNativeOk$ = blockNativeNetworkGasStations.check(
-      config.blockNativeApiKey,
+    const allOk$ = merge(
+      blockNativeNetworkGasStations(config.blockNativeApiKey).check,
+      alchemyNetworkGasStations(config.alchemyApiKey).check,
+      ankrNetworkGasStations.check,
+      llamaNetworkGasStations.check,
     );
-
-    const alchemyOk$ = alchemyNetworkGasStations.check(config.alchemyApiKey);
-
-    const allOk$ = merge(blockNativeOk$, alchemyOk$);
 
     const errors$ = allOk$.pipe(
       filter(
+        // the string is the reason
         (maybeError): maybeError is string => typeof maybeError === "string",
       ),
       map((error) => new VError(error)),
@@ -72,32 +74,55 @@ class GasStationSource extends AirbyteSourceBase<SourceConfig> {
   }
 
   streams(config: SourceConfig): AirbyteStreamBase[] {
-    const polygonSrc$ = forkJoin([
-      blockNativeNetworkGasStations.polygon(config.blockNativeApiKey),
-      alchemyNetworkGasStations.polygon(config.alchemyApiKey),
-    ]);
-    const ethereumSrc$ = forkJoin([
-      blockNativeNetworkGasStations.ethereum(config.blockNativeApiKey),
-      alchemyNetworkGasStations.ethereum(config.alchemyApiKey),
-    ]);
+    // we do this way, getting from sources, as if we had choosen to get by network, it would
+    // be easy to just forget to add a new network to the list when updating.
+    // this way we are type safe.
 
-    return [
-      new SourceStream(this.logger, "gas-station/polygon", polygonSrc$),
-      new SourceStream(this.logger, "gas-station/ethereum", ethereumSrc$),
+    // all gas stations
+    const gasStations = [
+      blockNativeNetworkGasStations(config.blockNativeApiKey),
+      alchemyNetworkGasStations(config.alchemyApiKey),
+      ankrNetworkGasStations,
+      llamaNetworkGasStations,
     ];
-  }
 
-  read(
-    config: SourceConfig,
-    catalog: AirbyteConfiguredCatalog,
-    state?: AirbyteState,
-  ): AsyncGenerator<AirbyteMessage> {
-    return from(super.read(config, catalog, state))
-      .pipe(
-        tap((data) => {
-          this.logger.info(`Got data, ${JSON.stringify(data)}`);
-        }),
-      )
-      [Symbol.asyncIterator]();
+    // merge all streams into one
+    // {[network]: Observable of gas station data, emitting 1 by 1}
+    // it gets concatenated inside our SourceStream class
+    const sources = networkList.reduce(
+      (acc, network) => ({
+        ...acc,
+        [network]: merge(
+          ...gasStations
+            .map((gasStation) => {
+              const gasStationNetwork$ = gasStation[
+                network as keyof typeof gasStation
+              ] as Observable<unknown> | undefined;
+              return gasStationNetwork$?.pipe(
+                // each source has 30 secs to complete, so it doens't freeze too much
+                timeout(30_000),
+                // we do this to ignore errors per network source
+                catchError((err) => {
+                  this.logger.error(
+                    new VError(err, `Non fatal error in stream ${network}`)
+                      .message,
+                  );
+                  return EMPTY;
+                }),
+              );
+            })
+            // filter out undefined, as not all gasStation sources have all networks
+            .filter(Boolean),
+        ),
+      }),
+      {} as Record<Networks, ReturnType<typeof forkJoin>>,
+    );
+
+    const streams = Object.entries(sources).map(
+      ([network, source]) =>
+        new SourceStream(this.logger, `gas-station/${network}`, source),
+    );
+
+    return streams;
   }
 }
