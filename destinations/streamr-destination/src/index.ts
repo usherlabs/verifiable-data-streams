@@ -67,7 +67,16 @@ interface WriteStats {
 type ExpectedConfig = {
   privateKey: string;
   devNetUrl?: string;
-  streamAddress: string;
+  // Prefix for stream name. If Stream Name Behavior is set to IGNORE_STREAM_NAME, this prefix will be used as stream name.
+  streamrStreamPrefix: string;
+  // How to use stream name from Airbyte.
+  //  - STREAM_NAME_AS_STREAMR_SUFFIX: Use stream name from Airbyte as suffix for stream name on Streamr.
+  //  - STREAM_NAME_AS_DATA_PROPERTY: Use stream name from Airbyte as data property.
+  //  - IGNORE_STREAM_NAME: Ignore stream name from Airbyte. Use streamrStreamPrefix as stream name and publish data as is.
+  streamNameBehavior:
+    | "STREAM_NAME_AS_STREAMR_SUFFIX"
+    | "STREAM_NAME_AS_DATA_PROPERTY"
+    | "IGNORE_STREAM_NAME";
 };
 
 /** Streamr destination implementation. */
@@ -118,13 +127,34 @@ class StreamrDestination extends AirbyteDestination<ExpectedConfig> {
     streams: AirbyteStream[],
     config: ExpectedConfig,
   ): Promise<void> => {
+    const shouldPartitionByStreamName =
+      config.streamNameBehavior === "STREAM_NAME_AS_STREAMR_SUFFIX";
+
+    // If behavior is not to use as suffix, we will have only one stream to work with
+    // and we will set it as default stream for all records
+    //
+    // This way, we don't need to change the
+    // logic about where to publish each stream message
+    const maybeSingleStream = !shouldPartitionByStreamName
+      ? await this.streamrClient
+          .getStream(config.streamrStreamPrefix)
+          .catch((e) => {
+            throw new nerror.VError(
+              e,
+              `Failed to get stream ${config.streamrStreamPrefix}`,
+            );
+          })
+      : undefined;
+
     const streamObjectsPromises = streams.map(async (stream) => [
       stream.name,
-      await this.streamrClient
-        .getStream(`${config.streamAddress}/${stream.name}`)
-        .catch((e) => {
-          throw new nerror.VError(e, `Failed to get stream ${stream.name}`);
-        }),
+      shouldPartitionByStreamName
+        ? await this.streamrClient
+            .getStream(`${config.streamrStreamPrefix}${stream.name}`)
+            .catch((e) => {
+              throw new nerror.VError(e, `Failed to get stream ${stream.name}`);
+            })
+        : maybeSingleStream!,
     ]);
 
     const streamObjects = await Promise.all(streamObjectsPromises);
@@ -271,7 +301,7 @@ class StreamrDestination extends AirbyteDestination<ExpectedConfig> {
 
             if (!streamrStream) {
               throw new nerror.VError(
-                `Undefined stream ${recordMessage.record.stream}`
+                `Undefined stream ${recordMessage.record.stream}`,
               );
             }
 
@@ -285,8 +315,15 @@ class StreamrDestination extends AirbyteDestination<ExpectedConfig> {
               this.logger.info(
                 `content: ${JSON.stringify(context.record.data)}`,
               );
-              await streamrStream.publish(context.record.data);
-              await sleep(5000)
+              
+              const message =
+                config.streamNameBehavior === "STREAM_NAME_AS_DATA_PROPERTY"
+                  ? {
+                      [context.record.stream]: context.record.data,
+                    }
+                  : context.record.data;
+              await streamrStream.publish(message);
+              await sleep(5000);
 
               stats.recordsWritten++;
               stats.recordsProcessed++;

@@ -13,18 +13,32 @@
     "type": "object",
     "required": [
       "privateKey",
-      "streamAddress"
+      "streamrStreamPrefix",
+      "streamNameBehavior"
     ],
     "additionalProperties": false,
     "properties": {
       "privateKey": {
+        "title": "Private Key",
         "type": "string",
-        "description": "You private key on Streamr.",
+        "description": "You private key to be used on Streamr to publish messages.",
         "airbyte_secret": true
       },
-      "streamAddress": {
+      "streamrStreamPrefix": {
+        "title": "Streamr Stream Name or Prefix",
         "type": "string",
-        "description": "Streamr stream address. I.e., the prefix of the stream id."
+        "description": "Stream name or prefix to be used on Streamr to publish messages. </br> If streamNameBehavior is STREAM_NAME_AS_STREAMR_SUFFIX, then stream name will be [streamrStreamPrefix][streamName]. </br> If streamNameBehavior is STREAM_NAME_AS_DATA_PROPERTY, then stream name will be [streamrStreamPrefix]. </br> If streamNameBehavior is IGNORE_STREAM_NAME, then stream name will be [streamrStreamPrefix]."
+      },
+      "streamNameBehavior": {
+        "title": "Stream Name Behavior",
+        "type": "string",
+        "description": "STREAM_NAME_AS_STREAMR_SUFFIX: Use stream name from Airbyte as suffix for stream name on Streamr. </br> STREAM_NAME_AS_DATA_PROPERTY: Use stream name from Airbyte as data property. </br> IGNORE_STREAM_NAME: Ignore stream name from Airbyte. Use streamrStreamPrefix as stream name and publish data as is.",
+        "default": "STREAM_NAME_AS_STREAMR_SUFFIX",
+        "enum": [
+          "STREAM_NAME_AS_STREAMR_SUFFIX",
+          "STREAM_NAME_AS_DATA_PROPERTY",
+          "IGNORE_STREAM_NAME"
+        ]
       },
       "devNetUrl": {
         "type": "string",
