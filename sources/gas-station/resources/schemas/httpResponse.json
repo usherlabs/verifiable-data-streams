@@ -7,10 +7,12 @@
       "type": "array",
       "items": {
         "type": "object",
+        "required": [
+          "source"
+        ],
         "properties": {
           "source": {
-            "type": "string",
-            "enum": ["blocknative", "alchemy"]
+            "type": "string"
           }
         }
       }

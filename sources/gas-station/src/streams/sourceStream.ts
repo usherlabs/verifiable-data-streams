@@ -1,5 +1,5 @@
 import { AirbyteLogger, AirbyteStreamBase } from "faros-airbyte-cdk";
-import { map, Observable } from "rxjs";
+import { EMPTY, Observable, of, switchMap, toArray } from "rxjs";
 import { Dictionary } from "ts-essentials";
 
 export class SourceStream extends AirbyteStreamBase {
@@ -31,9 +31,15 @@ export class SourceStream extends AirbyteStreamBase {
     this.logger.info("Reading records");
     return this.source
       .pipe(
-        map((value) => ({
-          data: value,
-        })),
+        toArray(),
+        switchMap((value) =>
+          value.length
+            ? of({
+                data: value,
+              })
+            : // because it should not emit anything if there is no data
+              EMPTY,
+        ),
       )
       [Symbol.asyncIterator]();
   }
