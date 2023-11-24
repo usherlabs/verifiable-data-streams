@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "rxjs": "8.0.0-alpha.12",
+    "fp-ts": "^2.16.1",
+    "web3": "^4.2.2",
     "alchemy-sdk": "^3.0.0"
     }
 }

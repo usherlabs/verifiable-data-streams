@@ -8,5 +8,4 @@ build({
     target: "es2019",
     format: "cjs",
     platform: "node",
-    external: ['./node_modules/*'],
 }).catch(() => process.exit(1));
