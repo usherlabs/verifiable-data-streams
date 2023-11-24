@@ -25,25 +25,16 @@ export async function tempFile(
  * Creates a temporary file with testing configuration
  * @return path to the temporary config file
  */
-export async function tempConfig({
-  privateKey,
-  streamAddress,
-  invalid_record_strategy = InvalidRecordStrategy.SKIP,
-  source_specific_configs,
-    devNetUrl
-}: {
+export async function tempConfig(conf: {
   privateKey: string;
-  streamAddress: string;
+  devNetUrl?: string;
+  streamrStreamPrefix: string;
+  streamNameBehavior:
+      | "STREAM_NAME_AS_STREAMR_SUFFIX"
+      | "STREAM_NAME_AS_DATA_PROPERTY"
+      | "IGNORE_STREAM_NAME";
   invalid_record_strategy?: InvalidRecordStrategy;
   source_specific_configs?: Dictionary<any>;
-  devNetUrl?: string
 }): Promise<string> {
-  const conf = {
-    privateKey,
-    streamAddress,
-    invalid_record_strategy,
-    source_specific_configs,
-    devNetUrl
-  };
   return tempFile(JSON.stringify(conf), { suffix: ".json" });
 }

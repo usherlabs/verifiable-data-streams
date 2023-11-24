@@ -44,6 +44,11 @@ export class CLI {
     });
   }
 
+  async exit(): Promise<void> {
+    this.cp.kill();
+    await this.wait();
+  }
+
   /**
    * Checks stdin for the given prompt string, then writes the given response to
    * stdout.
