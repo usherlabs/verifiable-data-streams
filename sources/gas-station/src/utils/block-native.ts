@@ -1,6 +1,12 @@
 import { fromFetch } from "rxjs/internal/observable/dom/fetch";
 import { catchError, map, of } from "rxjs";
-import { AnyObject, mapToSource, SourceDictOfObservables } from "./common";
+import {
+  AnyObject,
+  formatSourceResponse,
+  SourceDictOfObservables,
+} from "./common";
+
+type BlockNativeNetworks = "ethereum" | "polygon";
 
 // curl -H "Authorization: your-apikey-here" https://api.blocknative.com/gasprices/blockprices
 const blockNativeEthereumGasStationFromKey = (apiKey: string) =>
@@ -9,7 +15,7 @@ const blockNativeEthereumGasStationFromKey = (apiKey: string) =>
       Authorization: apiKey,
     },
     selector: (response) => response.json(),
-  }).pipe(mapToSource("blocknative"));
+  }).pipe(formatSourceResponse("blocknative"));
 
 // curl -H "Authorization: your-apikey-here" "https://api.blocknative.com/gasprices/blockprices?chainid=137"
 const blockNativePolygonGasStationFromKey = (apiKey: string) =>
@@ -21,7 +27,7 @@ const blockNativePolygonGasStationFromKey = (apiKey: string) =>
       },
       selector: (response) => response.json(),
     },
-  ).pipe(mapToSource("blocknative"));
+  ).pipe(formatSourceResponse("blocknative"));
 
 const invalidMsg = "Blocknative API key is invalid";
 const checkApiKey = (apiKey: string) =>
@@ -39,8 +45,9 @@ const checkApiKey = (apiKey: string) =>
     }),
   );
 
-export const blockNativeNetworkGasStations = {
-  ethereum: blockNativeEthereumGasStationFromKey,
-  polygon: blockNativePolygonGasStationFromKey,
-  check: checkApiKey,
-} satisfies SourceDictOfObservables;
+export const blockNativeNetworkGasStations = (apiKey: string) =>
+  ({
+    ethereum: blockNativeEthereumGasStationFromKey(apiKey),
+    polygon: blockNativePolygonGasStationFromKey(apiKey),
+    check: checkApiKey(apiKey),
+  }) satisfies SourceDictOfObservables<BlockNativeNetworks>;

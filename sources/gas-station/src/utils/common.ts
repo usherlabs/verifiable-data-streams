@@ -1,24 +1,39 @@
-import { map, Observable } from "rxjs";
+import { catchError, map, Observable, pipe, throwError } from "rxjs";
+import { VError } from "@netflix/nerror";
 
 export type AnyObject = {
   [key: string]: unknown;
 };
-export type Sources = "blocknative" | "alchemy" | "quicknode";
-export type Networks = "ethereum" | "polygon" | "avalanche";
+export type Sources = "blocknative" | "alchemy" | "ankr" | "llama";
+export type Networks = (typeof networkList)[number];
 
-export const mapToSource = (sourceType: Sources) =>
-  map(<T extends object>(data: T) => ({
-    source: sourceType,
-    ...data,
-  }));
+export const networkList = [
+  "ethereum",
+  "polygon",
+  "arbitrum",
+  "optimism",
+  "astar",
+  "base",
+  "bsc",
+  "fantom",
+  "avalanche",
+] as const;
 
-type FunctionReturning<T> = (...args: any[]) => T;
-export type SourceDictOfObservables = {
-  [key in Networks]?: FunctionReturning<
-    Observable<{
-      source: Sources;
-    }>
-  >;
+export const formatSourceResponse = (sourceType: Sources) =>
+  pipe(
+    map(<T extends object>(data: T) => ({
+      source: sourceType,
+      ...data,
+    })),
+    catchError((err) => {
+      return throwError(() => new VError(err, `Error in ${sourceType}`));
+    }),
+  );
+
+export type SourceDictOfObservables<N extends Networks = Networks> = {
+  [key in N]: Observable<{
+    source: Sources;
+  }>;
 } & {
-  check: FunctionReturning<Observable<true | string>>;
+  check: Observable<true | string>;
 };
