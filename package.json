@@ -1,7 +1,7 @@
 {
   "name": "verifiable-data-streams",
   "version": "0.0.1",
-  "description": "",
+  "description": "Integrate and access verifiable, tamper-proof data streams. Powered by Airbyte, Streamr, and LogStore technologies.",
   "private": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +25,17 @@
     "typescript": "^5.3.2",
     "vitest": "^0.34.6"
   },
-  "keywords": [],
+  "keywords": [
+    "data-streams",
+    "verifiable-data",
+    "airbyte-integration",
+    "streamr",
+    "logstore",
+    "data-accessibility",
+    "open-source",
+    "real-time-data-querying",
+    "historical-data-access"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }

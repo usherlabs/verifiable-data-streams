@@ -14,10 +14,7 @@
     "spec": "node bin/main.js spec",
     "write": "cat sample_files/records.jsonl | node bin/main.js write --config secret/config.json --catalog sample_files/configured_catalog.json"
   },
-  "homepage": "https://thanhle.blog",
-  "repository": "https://github.com/faros-ai/airbyte-connectors",
-  "author": "Faros AI, Inc.",
-  "license": "Apache-2.0",
+  "license": "",
   "files": [
     "lib/"
   ],
@@ -37,25 +34,6 @@
     "sqlite": "^4.0.23",
     "streamr-client": "^8.5.5",
     "turndown": "^7.1.1"
-  },
-  "jest": {
-    "coverageDirectory": "out/coverage",
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/test/"
-    ],
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      ".d.ts",
-      ".js"
-    ],
-    "testTimeout": 30000,
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "test/tsconfig.json"
-      }
-    }
   },
   "devDependencies": {
     "cross-spawn": "^7.0.3",

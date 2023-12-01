@@ -1,13 +1,18 @@
 {
   "name": "gas-station",
   "version": "0.0.1",
-  "description": "",
+  "description": "Gas Station Source for Airbyte",
   "private": true,
   "main": "index.js",
   "scripts": {
     "build": "tsx ./build.ts",
     "clean": "rm -rf lib node_modules out"
   },
+  "keywords": [
+    "airbyte",
+    "source",
+    "gas-station"
+  ],
   "dependencies": {
     "rxjs": "8.0.0-alpha.12",
     "fp-ts": "^2.16.1",
