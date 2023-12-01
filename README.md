@@ -29,7 +29,7 @@ and [learn how to query data from it using LogStore](https://docs.logstore.usher
 
 | Name                    | Type        | Links                                                                                                               | Description                                                                                                                    |
 |-------------------------|-------------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Multi-Chain Gas Station | Source      | [GitHub](https://github.com/usherlabs/verifiable-data-streams/sources/gas-station) </br>Streamr Hub</br> Usage Demo | Track and analyze gas prices across different blockchains.                                                                     |
+| Multi-Chain Gas Station | Source      | [GitHub](https://github.com/usherlabs/verifiable-data-streams/sources/gas-station) </br>[Streamr Hub](https://streamr.network/hub/projects/0x833774c6a6bcffdc67289895167d1190b738803502c89a451bbfd13076e4a61b/overview)</br>[Usage Demo](https://codesandbox.io/p/devbox/multi-chain-gas-station-data-streams-2h4krg) | Track and analyze gas prices across different blockchains.                                                                     |
 | Streamr Destination     | Destination | [GitHub](https://github.com/devmate-cloud/streamr-airbyte-connectors/tree/main)                                     | Enhanced flexibility in data publishing, inspired by existing Streamr-Airbyte connectors but with specific capabilities added. |
 
 ### **Querying Historical Data**
@@ -61,7 +61,7 @@ To contribute by building a new connector, follow these steps:
 
 - [Airbyte Documentation](https://docs.airbyte.com/) - Learn how to build or use an Airbyte connector.
 - [LogStore Documentation](https://docs.logstore.usher.so/) - Detailed information on using LogStore for data querying.
-- Gas Station Project Page at Streamr Hub - List of available streams
+- [Gas Station Project Page at Streamr Hub](https://streamr.network/hub/projects/0x833774c6a6bcffdc67289895167d1190b738803502c89a451bbfd13076e4a61b/overview) - List of available streams
 
 ## **Contributing**
 
