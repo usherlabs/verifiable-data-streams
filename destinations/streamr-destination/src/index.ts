@@ -1,4 +1,6 @@
-import {Command} from "commander";
+import * as nerror from "@netflix/nerror";
+import { CONFIG_TEST, Stream, StreamrClient } from "@streamr/sdk";
+import { Command } from "commander";
 import {
   AirbyteConfig,
   AirbyteConfiguredCatalog,
@@ -15,13 +17,11 @@ import {
   AirbyteStream,
   parseAirbyteMessage,
 } from "faros-airbyte-cdk";
-import * as readline from "readline";
-import {CONFIG_TEST, Stream, StreamrClient} from "streamr-client";
-import {Dictionary} from "ts-essentials";
-import * as nerror from "@netflix/nerror";
+import { sleep } from "faros-feeds-sdk/lib/feed";
 import _ from "lodash";
-import {from, Observable, shareReplay, tap} from "rxjs";
-import {sleep} from "faros-feeds-sdk/lib/feed";
+import * as readline from "readline";
+import { Observable, from, shareReplay, tap } from "rxjs";
+import { Dictionary } from "ts-essentials";
 
 /** The main entry point. */
 export function mainCommand(options?: {
@@ -315,7 +315,7 @@ class StreamrDestination extends AirbyteDestination<ExpectedConfig> {
               this.logger.info(
                 `content: ${JSON.stringify(context.record.data)}`,
               );
-              
+
               const message =
                 config.streamNameBehavior === "STREAM_NAME_AS_DATA_PROPERTY"
                   ? {
