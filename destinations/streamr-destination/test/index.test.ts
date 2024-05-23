@@ -11,7 +11,7 @@ import { CLI, read } from "./cli";
 import { tempConfig } from "./temp";
 import { sleep } from "faros-feeds-sdk/lib/feed";
 import { filter, firstValueFrom, from, map, toArray } from "rxjs";
-import { CONFIG_TEST, StreamrClient } from "streamr-client";
+import { CONFIG_TEST, StreamrClient } from "@streamr/sdk";
 
 const privateKey = process.env.PRIVATE_KEY!;
 const streamAddress = "0xd95083fbf72897f8a6607f27891e814b29d843b3";
