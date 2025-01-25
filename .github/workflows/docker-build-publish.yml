@@ -12,8 +12,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  GAS_STATION_IMAGE_NAME: ${{ github.repository }}/gas-station
-  STREAMR_DEST_IMAGE_NAME: ${{ github.repository }}/streamr-destination
+  GAS_STATION_IMAGE_NAME: ${{ github.repository }}/airbyte-gas-station
+  STREAMR_DEST_IMAGE_NAME: ${{ github.repository }}/airbyte-streamr-destination
 
 jobs:
   build-and-push:
