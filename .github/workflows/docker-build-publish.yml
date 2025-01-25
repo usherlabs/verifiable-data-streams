@@ -61,8 +61,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          build-args: |
-            path=sources/gas-station
+          build-args: path=sources/gas-station
           push: true
           tags: ${{ steps.meta-gas.outputs.tags }}
           labels: ${{ steps.meta-gas.outputs.labels }}
@@ -71,8 +70,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          build-args: |
-            path=destinations/streamr
+          build-args: path=destinations/streamr-destination
           push: true
           tags: ${{ steps.meta-streamr.outputs.tags }}
           labels: ${{ steps.meta-streamr.outputs.labels }} 
